@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dash Player</title>
-  <link rel="stylesheet" href="https://reference.dashif.org/dash.js/latest/samples/lib/bootstrap/bootstrap.min.css">
-  <link rel="stylesheet" href="https://reference.dashif.org/dash.js/latest/contrib/akamai/controlbar/controlbar.css">
-  <link rel="stylesheet" href="https://reference.dashif.org/dash.js/latest/samples/lib/main.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css">
+  <link rel="stylesheet" href="extras/bootstrap.min.css">
+  <link rel="stylesheet" href="extras/controlbar.css">
+  <link rel="stylesheet" href="extras/main.css">
+  <link rel="stylesheet" href="extras/tomorrow.min.css">
   <style>
     video {
         width: 100%;
@@ -20,9 +20,9 @@
         line-height: 1.0;
     }
   </style>
-  <script class="code" src="https://reference.dashif.org/dash.js/latest/contrib/akamai/controlbar/ControlBar.js"></script>
-  <script src="https://reference.dashif.org/dash.js/latest/dist/dash.all.debug.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script class="code" src="extras/ControlBar.js"></script>
+  <script src="extras/dash.all.debug.js"></script>
+  <script src="extras/highlight.min.js"></script>
 </head>
 <body>
   <main>
@@ -81,6 +81,12 @@
 
         if (dashMetrics && streamInfo) {
           const periodIdx = streamInfo.index;
+          const bitrateInterval = 5;
+          var bitrateCalculator = setInterval(function () {
+            var calculatedBitrate = (((video.webkitVideoDecodedByteCount - lastDecodedByteCount) / 1000) * 8) / bitrateInterval;
+            document.getElementById('calculatedBitrate').innerText = Math.round(calculatedBitrate) + " Kbps";
+            lastDecodedByteCount = video.webkitVideoDecodedByteCount;
+          }, bitrateInterval * 1000);
           var repSwitch = dashMetrics.getCurrentRepresentationSwitch('video', true);
           var bufferLevel = dashMetrics.getCurrentBufferLevel('video', true);
           var bitrate = repSwitch ? Math.round(dashAdapter.getBandwidthForRepresentation(repSwitch.to, periodIdx) / 1000) : NaN;
@@ -88,12 +94,16 @@
           var currentRep = adaptation.Representation_asArray.find(function (rep) {
               return rep.id === repSwitch.to
           })
+          var lastDecodedByteCount = 0;
+          var calculatedBitrate = (((video.webkitVideoDecodedByteCount - lastDecodedByteCount) / 1000) * 8) / bitrateInterval;
+            document.getElementById('calculatedBitrate').innerText = Math.round(calculatedBitrate) + " Kbps";
           var frameRate = currentRep.frameRate;
           var resolution = currentRep.width + 'x' + currentRep.height;
           document.getElementById('bufferLevel').innerText = bufferLevel + " secs";
           document.getElementById('framerate').innerText = frameRate + " fps";
           document.getElementById('reportedBitrate').innerText = bitrate + " Kbps";
           document.getElementById('resolution').innerText = resolution;
+          
           const time = (new Date()).toLocaleDateString("en-US", {
             year: 'numeric',
             month: 'numeric',
@@ -105,17 +115,17 @@
           });
           const log = [
             time,
-            currentRep.width + 'x' + currentRep.height,
-            bufferLevel + " secs",
-            frameRate + " fps",
-            bitrate + " Kbps",
-            resolution
+            bufferLevel,
+            frameRate,
+            bitrate,
+            resolution,
+            Math.round(calculatedBitrate)
           ];
           console.log(log.join(';'))
         }
       }, 1000);
 
-      if (video.webkitVideoDecodedByteCount !== undefined) {
+      /*if (video.webkitVideoDecodedByteCount !== undefined) {
         var lastDecodedByteCount = 0;
         const bitrateInterval = 5;
         var bitrateCalculator = setInterval(function () {
@@ -125,7 +135,7 @@
         }, bitrateInterval * 1000);
       } else {
         document.getElementById('chrome-only').style.display = "none";
-      }
+      }*/
     }
   </script>
   <script>

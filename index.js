@@ -11,7 +11,7 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     defaultViewport: null,
     // args: ['--start-maximized'],
     executablePath:
-      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/usr/bin/google-chrome',
   };
 
   const browser = await puppeteer.launch(config);
