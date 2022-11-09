@@ -10,7 +10,7 @@ $ sudo apt-get install nodejs
 ## Getting started
 If you already have the required software, you should clone this repository in your machine:
 ```bash
-$ git clone https://github.com/leandrocalmeida/player-mpegdash.git
+$ git clone https://github.com/dcomp-leris/player-mpegdash.git
 ```
 
 The next step is install [puppeter](https://www.npmjs.com/package/puppeteer), a nodejs library which provides a high-level API to control chrome browser.
